@@ -27,8 +27,8 @@ def get_response(api_path, method='get', data=None):
     return response
 
 def check_if_bitlink(url):
-    url = urlparse(url)[1]+urlparse(url)[2]
-    response = get_response('bitlinks/{bitlink}'.format(bitlink=url))
+    url_without_scheme = urlparse(url)[1]+urlparse(url)[2]
+    response = get_response('bitlinks/{bitlink}'.format(bitlink=url_without_scheme))
     return response.ok
 
 def get_bitlink(long_url):
@@ -51,8 +51,8 @@ def get_clicks_amount(bitlink):
     :param bitlink
     :return: Total clicks on bitlink
     """
-    bitlink = urlparse(bitlink)[1] + urlparse(bitlink)[2]
-    response = get_response('bitlinks/{}/clicks/summary'.format(bitlink))
+    url_without_scheme = urlparse(bitlink)[1] + urlparse(bitlink)[2]
+    response = get_response('bitlinks/{}/clicks/summary'.format(url_without_scheme))
     if not response.ok:
         response.raise_for_status()
     total_clicks = json.loads(response.text)['total_clicks']
