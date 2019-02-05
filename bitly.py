@@ -1,8 +1,6 @@
 import requests, json, os
 from dotenv import load_dotenv
-
-load_dotenv()
-TOKEN = os.getenv('TOKEN')
+from urllib.parse import urlparse
 
 
 def generate_headers():
@@ -26,18 +24,14 @@ def get_response(api_path, method='get', data=None):
         response = requests.get(url, headers=headers)
     if method == 'post':
         response = requests.post(url, headers=headers, data=data)
-    if not response.ok:
-        raise ConnectionError
     return response
 
-
-def get_user_info():
-    """
-    :return: json with users info
-    """
-    response = get_response('user')
-    return response.text
-
+def check_if_bitlink(url):
+    url = urlparse(url)[1]+urlparse(url)[2]
+    response = get_response('bitlinks/{bitlink}'.format(bitlink=url))
+    if response.ok:
+        return True
+    return False
 
 def get_bitlink(long_url):
     """
@@ -48,6 +42,8 @@ def get_bitlink(long_url):
         {'long_url': long_url}
     )
     response = get_response('bitlinks', method='post', data=data)
+    if not response.ok:
+        response.raise_for_status()
     short_link = json.loads(response.text)['link']
     return short_link
 
@@ -57,9 +53,10 @@ def get_clicks_amount(bitlink):
     :param bitlink
     :return: Total clicks on bitlink
     """
-    if 'http://' in bitlink:
-        bitlink = bitlink[7:]
+    bitlink = urlparse(bitlink)[1] + urlparse(bitlink)[2]
     response = get_response('bitlinks/{}/clicks/summary'.format(bitlink))
+    if not response.ok:
+        response.raise_for_status()
     total_clicks = json.loads(response.text)['total_clicks']
     return total_clicks
 
@@ -69,15 +66,19 @@ def handle_any_link(url):
     :param url: Bitlink or url that need to be shorten
     :return: Bitlink or Total clicks on bitlink
     """
-    try:
+    if check_if_bitlink(url):
         return "Total links on bitlink: {}".format(get_clicks_amount(url))
-    except ConnectionError:
+    else:
         return 'Take your bitlink: {}'.format(get_bitlink(url))
 
 
 if __name__ == '__main__':
+    load_dotenv()
+    TOKEN = os.getenv('TOKEN') or 'YOUR_SECERET_TOCKEN'
     url = input('Enter long url or BitLink: ')
     try:
-        print(handle_any_link(url))
-    except ConnectionError:
-        exit('URL or BitLink doesn\'t exist')
+        print(
+            handle_any_link(url)
+        )
+    except requests.exceptions.HTTPError as error:
+        print('{}\nCheck the url you entered'.format(error))
