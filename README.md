@@ -1,16 +1,24 @@
 # About:
-With this program you can shorten link or git bitlink statistic
+The script shorten url with bit.ly service. Based on [Bitly API (4.0.0)](https://dev.bitly.com/v4_documentation.html)
 
-# System requariments:
+Script take any link or bitlink as input.
+If you will enter a link, you got a bitlink. 
+And if you will enter a bitlink, you got number of clicks on it
+# System requirements:
 python3.5+
 
 # How to use:
+##Install requirements:
+```bash
+$ python -m pip install -r requirements.txt
+```
+## Run script:
+python bitly.py your-url-here
 
 ``` bash
-python bitly.py
+$ python bitly.py https://ya.ru
+Take your bitlink: http://bit.ly/2HAAwZ4
+
+$ python bitly.py http://bit.ly/2HAAwZ4
+Total links on bitlink: 9
 ```
-Program ask you or url. You can paste url or bitlink.
-
-If you post url, you get bitlink
-
-If you post bitlink, you get bitlink click statistic
