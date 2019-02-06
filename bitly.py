@@ -1,6 +1,7 @@
 import requests, json, os
 from dotenv import load_dotenv
 from urllib.parse import urlparse
+import argparse
 
 
 def generate_headers():
@@ -73,7 +74,10 @@ def handle_any_link(url):
 if __name__ == '__main__':
     load_dotenv()
     TOKEN = os.getenv('TOKEN')
-    url = input('Enter long url or BitLink: ')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('url', help='URL for your link')
+    args = parser.parse_args()
+    url = args.url
     try:
         print(
             handle_any_link(url)
