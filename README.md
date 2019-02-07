@@ -1,4 +1,4 @@
-#Bitly URL Shortener
+# Bitly URL Shortener
 
 ## About:
 The script shorten url with bit.ly service. 
